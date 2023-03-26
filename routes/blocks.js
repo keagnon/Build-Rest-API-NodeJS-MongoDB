@@ -21,14 +21,24 @@ router.get('/', (req, res) => {
 //Getting one block
 
 router.get('/:id', (req, res) => {
-    res.send(req.params.id);
+    res.json(res.Block)
 });
 
 //Creating one block
 
-router.post('/', (req, res) => {
-    res.send('Post page');
-});
+// Creating one
+router.post('/', async (req, res) => {
+    const block = new Block({
+      name: req.body.name,
+      subscribedToChannel: req.body.subscribedToChannel
+    })
+    try {
+      const newBlock = await Block.save()
+      res.status(201).json(newBlock)
+    } catch (err) {
+      res.status(400).json({ message: err.message })
+    }
+  })
 
 //Updating one block
 
