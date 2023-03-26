@@ -25,12 +25,10 @@ router.get('/:id', (req, res) => {
 });
 
 //Creating one block
-
-// Creating one
 router.post('/', async (req, res) => {
     const block = new Block({
       name: req.body.name,
-      subscribedToChannel: req.body.subscribedToChannel
+      address: req.body.address
     })
     try {
       const newBlock = await Block.save()
@@ -51,5 +49,21 @@ router.patch('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
     res.send('Delete page');
 });
+
+//Middlleware
+async function getBlock(req, res, next) {
+    let block
+    try {
+      block = await Block.findById(req.params.id)
+      if (block == null) {
+        return res.status(404).json({ message: 'Cannot find block' })
+      }
+    } catch (err) {
+      return res.status(500).json({ message: err.message })
+    }
+  
+    res.block = block
+    next()
+  }
 
 module.exports = router;
