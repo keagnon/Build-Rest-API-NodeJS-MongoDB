@@ -20,8 +20,8 @@ router.get('/', (req, res) => {
 
 //Getting one block
 
-router.get('/:id', (req, res) => {
-    res.json(res.Block)
+router.get('/:id', getBlock,(req, res) => {
+    res.json(res.block.name)
 });
 
 //Creating one block
@@ -40,29 +40,49 @@ router.post('/', async (req, res) => {
 
 //Updating one block
 
-router.patch('/:id', (req, res) => {
-    res.send('Update page');
-});
+router.patch('/:id', getBlock, async (req, res) => {
+    if (req.body.name != null) {
+      res.block.name = req.body.name
+    }
+    if (req.body.address != null) {
+      res.subscriber.address = req.body.address
+    }
+    try {
+      const updatedblock = await res.block.save()
+      res.json(updatedblock)
+    } catch (err) {
+      res.status(400).json({ message: err.message })
+    }
+  })
 
 //Deleting one block
 
-router.delete('/:id', (req, res) => {
-    res.send('Delete page');
-});
+router.delete('/:id', getBlock, async (req, res) => {
+    try {
+      await res.block.remove()
+      res.json({ message: 'Deleted block' })
+    } catch (err) {
+      res.status(500).json({ message: err.message })
+    }
+  })
+  
 
 //Middlleware
 async function getBlock(req, res, next) {
-    let block
+    let block1
     try {
-      block = await Block.findById(req.params.id)
-      if (block == null) {
+      block1 = await Block.findById(req.params.id)
+      if (block1 == null) {
         return res.status(404).json({ message: 'Cannot find block' })
+      }
+      else{
+        return res.status(404).json({ message: 'block' })
       }
     } catch (err) {
       return res.status(500).json({ message: err.message })
     }
   
-    res.block = block
+    res.block1= block1
     next()
   }
 
